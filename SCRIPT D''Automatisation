@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# === 1. Création des comptes utilisateurs ===
+for user in formateur1 formateur2 admin-formation; do
+    adduser --disabled-password --gecos "" $user
+done
+
+# === 2. Ajouter des alias utiles pour chaque utilisateur ===
+for user in formateur1 formateur2 admin-formation; do
+    echo "alias maj='sudo apt update && sudo apt upgrade -y'" >> /home/$user/.bashrc
+    echo "alias aide='cat /etc/cloud-guide.txt'" >> /home/$user/.bashrc
+    chown $user:$user /home/$user/.bashrc
+done
+
+# === 3. Installation des outils nécessaires ===
+apt update && apt install -y nano git curl htop wget
+
+# === 4. Rédaction du guide cloud-guide.txt ===
+cat << 'EOF' > /etc/cloud-guide.txt
+Bienvenue sur votre environnement de formation Ubuntu !
+
+📚 Aliases disponibles :
+  maj   : met à jour le système
+  aide  : affiche ce guide
+
+📄 Commandes utiles :
+  ls -l             : liste détaillée des fichiers
+  cd [dossier]      : naviguer dans un dossier
+  nano [fichier]    : éditer un fichier en mode texte
+  htop              : surveiller les ressources système
+  git clone [URL]   : cloner un dépôt git
+
+Bon apprentissage !
+EOF
+
+# === 5. Personnalisation du motd (Message of the Day) ===
+cat << 'EOF' > /etc/motd
+**********************************************
+🎓  BIENVENUE DANS LA VM DE FORMATION UBUNTU  🎓
+👤 Utilisateurs : formateur1, formateur2, admin-formation
+📄 Tapez 'aide' pour afficher le guide
+**********************************************
+EOF
+
+echo "✅ Script terminé : Environnement de formation prêt !"
